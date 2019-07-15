@@ -1,0 +1,21 @@
+/data
+
+.DS_Store
+*.swp
+
+/node_modules
+/transpiled
+/types/generated/*
+/build
+/dist
+
+### Node ###
+
+# Logs
+*.log
+/logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.node-xmlhttprequest-sync-*
+*.env

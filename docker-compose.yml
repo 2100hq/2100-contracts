@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+  dev:
+    build:
+      context: .
+      dockerfile: 'Dockerfile'
+    env_file:
+      - .env
+    ports:
+      - 9545:9545
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+  bash:
+    image: 2100-contracts_dev:latest
+    command: '/bin/bash'
+    network_mode: "host"
+    env_file:
+      - .env
+    ports:
+      - 9545:9545
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+
+  yarn-lock:
+    image: 2100-contracts_dev:latest
+    command: 'yarn install'
+    network_mode: "host"
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
