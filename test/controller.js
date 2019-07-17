@@ -11,7 +11,8 @@ const errTypes = {
   stackUnderflow: 'stack underflow',
   staticStateChange: 'static state change',
   SafeMathSubOverflow: 'SafeMath: subtraction overflow',
-  ControllerAllowance: 'Controller does not have enough allowance granted'
+  ControllerAllowance: 'Controller does not have enough allowance granted',
+  SenderInsufficentFunds: 'Sender has insufficent funds'
 }
 
 function toDAI (amount) {
@@ -47,7 +48,7 @@ contract('Controller', accounts => {
   })
 
   describe('Deposit', () => {
-    let userPreBalance
+    let userPreDaiBalance
     let depositRequestAmount
     let minDeposit
     let depositedAmount
@@ -60,14 +61,14 @@ contract('Controller', accounts => {
         {from: user}
       )
       console.log('minted', toDAI(mintTx.receipt.logs[0].args.wad))
-      userPreBalance = await dai.balanceOf.call(user)
-      depositRequestAmount = userPreBalance.div(new BN(2))
+      userPreDaiBalance = await dai.balanceOf.call(user)
+      depositRequestAmount = userPreDaiBalance.div(new BN(2))
       minDeposit = await controller.minDeposit.call()
       depositedAmount = depositRequestAmount.sub(
         depositRequestAmount.mod(minDeposit)
       )
     })
-
+    it('should prevent owner from depositing')
     it('should not allow deposit before allowance', async () => {
       assert(
         (await dai.allowance.call(user, controller.address)).isZero(),
@@ -140,7 +141,7 @@ contract('Controller', accounts => {
 
       assert(
         (await dai.balanceOf.call(user)).eq(
-          userPreBalance.sub(depositedAmount)
+          userPreDaiBalance.sub(depositedAmount)
         ),
         'User should have correct remaining DAI balance'
       )
@@ -160,6 +161,86 @@ contract('Controller', accounts => {
       )
       assert(
         depositEvent.args.balance.eq(depositedAmount),
+        'User balance should match event'
+      )
+    })
+  })
+
+  describe('Withdraw', () => {
+    let userPre2100Balance
+    let userPreDaiBalance
+    let controllerPreDaiBalance
+    let withdrawRequestAmount
+    let withdrawTx
+    before(async () => {
+      userPre2100Balance = await controller.balanceOf.call(user)
+      userPreDaiBalance = await dai.balanceOf.call(user)
+      withdrawRequestAmount = userPre2100Balance
+      controllerPreDaiBalance = await dai.balanceOf.call(controller.address)
+    })
+    it('should prevent owner from withdrawing')
+    it('should prevent overdrawing funds', async () => {
+      const amount = userPre2100Balance.add(new BN(1))
+      let error
+      try {
+        await controller.withdraw(amount, {from: user})
+      } catch (e) {
+        error = e
+      }
+      assert(error, 'Should error')
+      assert(
+        new RegExp(errTypes.SenderInsufficentFunds).test(error.message),
+        `Should error with ${errTypes.SenderInsufficentFunds}; Got ${
+          error.message
+        }`
+      )
+    })
+    it('should allow withdrawing funds correctly', async () => {
+      try {
+        withdrawTx = await controller.withdraw(withdrawRequestAmount, {
+          from: user
+        })
+      } catch (error) {
+        assert.notOk(error, `Should not error but got ${error.message}`)
+      }
+    })
+    it('should perform correct calculations', async () => {
+      let userPostDaiBalance = await dai.balanceOf.call(user)
+      let userPost2100Balance = await controller.balanceOf.call(user)
+      let controllerPostDaiBalance = await dai.balanceOf.call(
+        controller.address
+      )
+      let userDaiDiff = userPreDaiBalance.add(withdrawRequestAmount)
+      let controllerDaiDiff = controllerPreDaiBalance.sub(withdrawRequestAmount)
+      let user2100Diff = userPre2100Balance.sub(withdrawRequestAmount)
+      assert(
+        userPostDaiBalance.eq(userDaiDiff),
+        'User DAI balance is not correct'
+      )
+      assert(
+        controllerPostDaiBalance.eq(controllerDaiDiff),
+        'Controller DAI balance is not correct'
+      )
+      assert(
+        userPost2100Balance.eq(user2100Diff),
+        'User 2100 balance is not correct'
+      )
+    })
+
+    it('should emit correctly', () => {
+      assert(withdrawTx.logs, 'Should produce logs')
+      const event = withdrawTx.logs.find(l => l.event === 'Withdraw')
+      assert(event, 'Should emit a withdraw event')
+      assert(
+        event.args.account === user,
+        'User should be the account in the Deposit event'
+      )
+      assert(
+        event.args.amount.eq(withdrawRequestAmount),
+        'Withdrawn amount should match event'
+      )
+      assert(
+        event.args.balance.eq(userPre2100Balance.sub(withdrawRequestAmount)),
         'User balance should match event'
       )
     })
