@@ -50,7 +50,7 @@ contract Controller is Claimer, Minter, Creator{
         return true;
     }
 
-    function deposit(uint256 _amount) public notOwner returns (bool) {
+    function deposit(uint256 _amount) notOwner public returns (bool) {
         uint256 amount = floor(_amount); // cut of greater than 2 decimal places
 
         require(amount > 0, "2100: Amount too small to deposit; Requires at least 0.01 DAI");
@@ -65,9 +65,9 @@ contract Controller is Claimer, Minter, Creator{
         return true;
     }
 
-    function withdraw(uint amount) public notOwner returns (bool) {
+    function withdraw(uint amount) notOwner public returns (bool) {
         require(_balances[msg.sender] >= amount, "2100: Sender does not have enough deposited to withdraw");
-        require(DAI.balanceOf(address(this) >= amount, "2100: Controller does not have enough balance to withdraw");
+        require(DAI.balanceOf(address(this)) >= amount, "2100: Controller does not have enough balance to withdraw");
 
         require(DAI.transfer(msg.sender, amount), "2100: Transfer from Controller to Sender failed");
 
