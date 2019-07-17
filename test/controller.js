@@ -26,12 +26,6 @@ contract('Controller', accounts => {
   before(async () => {
     controller = await Controller.deployed()
     dai = await DummyDAI.deployed()
-    console.log('minting for user')
-    const tx0 = await dai.mint.sendTransaction(
-      web3.utils.toWei('9.99', 'ether'),
-      {from: user}
-    )
-    console.log('minted', toDAI(tx0.receipt.logs[0].args.wad))
   })
   describe('Deploy', () => {
     it('should set variables correctly', async () => {
@@ -53,6 +47,27 @@ contract('Controller', accounts => {
   })
 
   describe('Deposit', () => {
+    let userPreBalance
+    let depositRequestAmount
+    let minDeposit
+    let depositedAmount
+    let depositTx
+
+    before(async () => {
+      console.log('minting for user')
+      const mintTx = await dai.mint.sendTransaction(
+        web3.utils.toWei('9.99', 'ether'),
+        {from: user}
+      )
+      console.log('minted', toDAI(mintTx.receipt.logs[0].args.wad))
+      userPreBalance = await dai.balanceOf.call(user)
+      depositRequestAmount = userPreBalance.div(new BN(2))
+      minDeposit = await controller.minDeposit.call()
+      depositedAmount = depositRequestAmount.sub(
+        depositRequestAmount.mod(minDeposit)
+      )
+    })
+
     it('should not allow deposit before allowance', async () => {
       assert(
         (await dai.allowance.call(user, controller.address)).isZero(),
@@ -73,15 +88,21 @@ contract('Controller', accounts => {
         )
       }
     })
+
     it('should allow deposit after allowance', async () => {
-      let userPreBalance = await dai.balanceOf.call(user)
-      let amount = userPreBalance.div(new BN(2))
-      assert(amount.gt(0), 'User must have greater than 0 balance')
+      assert(
+        depositRequestAmount.gt(0),
+        'User must have greater than 0 balance'
+      ) // sanity check mint occured
       console.log()
-      console.log('approving', toDAI(amount))
-      const tx1 = await dai.approve(controller.address, amount, {from: user})
+      console.log('approving', toDAI(depositRequestAmount))
+      const approveTx = await dai.approve(
+        controller.address,
+        depositRequestAmount,
+        {from: user}
+      )
       console.log()
-      console.log('approved', toDAI(tx1.receipt.logs[0].args.wad))
+      console.log('approved', toDAI(approveTx.receipt.logs[0].args.wad))
 
       console.log(
         'current allowance',
@@ -90,33 +111,57 @@ contract('Controller', accounts => {
         toDAI(await dai.allowance.call(user, controller.address))
       )
       assert(
-        (await dai.allowance.call(user, controller.address)).eq(amount),
+        (await dai.allowance.call(user, controller.address)).eq(
+          depositRequestAmount
+        ),
         'Controller allowance should be set'
       )
       console.log()
       console.log('depositing')
+      try {
+        depositTx = await controller.deposit(depositRequestAmount, {from: user})
+        console.log('done depositing')
+      } catch (error) {
+        console.log(error)
+        assert.notOk(error, `Should not error but got: ${error.message}`)
+      }
+    })
 
-      const tx = await controller.deposit(amount, {from: user})
-      console.log('done depositing')
-
-      const minDeposit = new BN(10).pow(new BN(16))
-      const flooredAmount = amount.sub(amount.mod(minDeposit))
-
+    it('should perform deposit calculations correctly', async () => {
       assert(
-        (await dai.balanceOf.call(controller.address)).eq(flooredAmount),
+        (await dai.balanceOf.call(controller.address)).eq(depositedAmount),
         'Controller does not have correct DAI balance.'
       )
 
       assert(
-        (await controller.balanceOf.call(user)).eq(flooredAmount),
+        (await controller.balanceOf.call(user)).eq(depositedAmount),
         'User is not credited correctly'
       )
 
       assert(
-        (await dai.balanceOf.call(user)).eq(userPreBalance.sub(flooredAmount)),
+        (await dai.balanceOf.call(user)).eq(
+          userPreBalance.sub(depositedAmount)
+        ),
         'User should have correct remaining DAI balance'
       )
     })
-    it('should do calculations correctly')
+
+    it('should emit correctly', () => {
+      assert(depositTx.logs, 'Should produce logs')
+      const depositEvent = depositTx.logs.find(l => l.event === 'Deposit')
+      assert(depositEvent, 'Should emit a deposit event')
+      assert(
+        depositEvent.args.account === user,
+        'User should be the account in the Deposit event'
+      )
+      assert(
+        depositEvent.args.amount.eq(depositedAmount),
+        'Deposited amount should match event'
+      )
+      assert(
+        depositEvent.args.balance.eq(depositedAmount),
+        'User balance should match event'
+      )
+    })
   })
 })
