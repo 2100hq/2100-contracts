@@ -83,11 +83,11 @@ contract Controller is Claimer, Minter, Creator {
     function withdraw(uint256 amount) public notOwner returns (bool) {
         require(
             _balances[msg.sender] >= amount,
-            "2100: Sender does not have enough deposited to withdraw"
+            "2100: Sender has insufficent funds to withdraw"
         );
         require(
             DAI.balanceOf(address(this)) >= amount,
-            "2100: Controller does not have enough balance to withdraw"
+            "2100: Controller has insufficent funds to withdraw"
         );
 
         require(
