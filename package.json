@@ -3,4 +3,14 @@
   "version": "0.0.0",
   "main": "index.js",
   "author": "Brett <brett@citizenhex.com>",
+  "scripts": {
+    "compile:watch": "fsmonitor -s -p '+/contracts/**/*.*' truffle compile",
+    "test:watch": "fsmonitor -s -p '+/contracts/**/*.*' '+/test/**/*.*' '+/migrations/*.*' truffle test",
+    "prettier": "prettier-standard '**/*.js'"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "fsmonitor": "^0.2.4",
+    "prettier-standard": "^9.1.1"
+  }
 }
