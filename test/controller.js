@@ -12,7 +12,8 @@ const errTypes = {
   staticStateChange: 'static state change',
   SafeMathSubOverflow: 'SafeMath: subtraction overflow',
   ControllerAllowance: 'Controller does not have enough allowance granted',
-  SenderInsufficentFunds: 'Sender has insufficent funds'
+  SenderInsufficentFunds: 'Sender has insufficent funds',
+  ControllerNotOwner: 'Owner cannot call this function'
 }
 
 function toDAI (amount) {
@@ -68,7 +69,19 @@ contract('Controller', accounts => {
         depositRequestAmount.mod(minDeposit)
       )
     })
-    it('should prevent owner from depositing')
+    it('should prevent owner from depositing', async () => {
+      let error
+      try {
+        await controller.deposit(new BN(1))
+      } catch (e) {
+        error = e
+      }
+      assert(error, 'Should error')
+      assert(
+        new RegExp(errTypes.ControllerNotOwner).test(error.message),
+        `Should error with ${errTypes.ControllerNotOwner}; Got ${error.message}`
+      )
+    })
     it('should not allow deposit before allowance', async () => {
       assert(
         (await dai.allowance.call(user, controller.address)).isZero(),
@@ -178,7 +191,19 @@ contract('Controller', accounts => {
       withdrawRequestAmount = userPre2100Balance
       controllerPreDaiBalance = await dai.balanceOf.call(controller.address)
     })
-    it('should prevent owner from withdrawing')
+    it('should prevent owner from withdrawing', async () => {
+      let error
+      try {
+        await controller.withdraw(new BN(1))
+      } catch (e) {
+        error = e
+      }
+      assert(error, 'Should error')
+      assert(
+        new RegExp(errTypes.ControllerNotOwner).test(error.message),
+        `Should error with ${errTypes.ControllerNotOwner}; Got ${error.message}`
+      )
+    })
     it('should prevent overdrawing funds', async () => {
       const amount = userPre2100Balance.add(new BN(1))
       let error
