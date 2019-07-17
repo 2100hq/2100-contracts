@@ -56,12 +56,11 @@ contract('Controller', accounts => {
     let depositTx
 
     before(async () => {
-      console.log('minting for user')
       const mintTx = await dai.mint.sendTransaction(
         web3.utils.toWei('9.99', 'ether'),
         {from: user}
       )
-      console.log('minted', toDAI(mintTx.receipt.logs[0].args.wad))
+
       userPreDaiBalance = await dai.balanceOf.call(user)
       depositRequestAmount = userPreDaiBalance.div(new BN(2))
       minDeposit = await controller.minDeposit.call()
@@ -108,35 +107,23 @@ contract('Controller', accounts => {
         depositRequestAmount.gt(0),
         'User must have greater than 0 balance'
       ) // sanity check mint occured
-      console.log()
-      console.log('approving', toDAI(depositRequestAmount))
+
       const approveTx = await dai.approve(
         controller.address,
         depositRequestAmount,
         {from: user}
       )
-      console.log()
-      console.log('approved', toDAI(approveTx.receipt.logs[0].args.wad))
 
-      console.log(
-        'current allowance',
-        user,
-        controller.address,
-        toDAI(await dai.allowance.call(user, controller.address))
-      )
       assert(
         (await dai.allowance.call(user, controller.address)).eq(
           depositRequestAmount
         ),
         'Controller allowance should be set'
       )
-      console.log()
-      console.log('depositing')
+
       try {
         depositTx = await controller.deposit(depositRequestAmount, {from: user})
-        console.log('done depositing')
       } catch (error) {
-        console.log(error)
         assert.notOk(error, `Should not error but got: ${error.message}`)
       }
     })
