@@ -29,7 +29,7 @@ contract('Controller', accounts => {
     console.log('minting for user')
     const tx0 = await dai.mint.sendTransaction(
       web3.utils.toWei('9.99', 'ether'),
-      { from: user }
+      {from: user}
     )
     console.log('minted', toDAI(tx0.receipt.logs[0].args.wad))
   })
@@ -61,7 +61,7 @@ contract('Controller', accounts => {
       const amount = await dai.balanceOf.call(user)
       assert(amount.gt(0), 'User DAI balance should not be 0')
       try {
-        await controller.deposit(amount, { from: user })
+        await controller.deposit(amount, {from: user})
         throw null
       } catch (error) {
         assert(error, 'Should error')
@@ -79,7 +79,7 @@ contract('Controller', accounts => {
       assert(amount.gt(0), 'User must have greater than 0 balance')
       console.log()
       console.log('approving', toDAI(amount))
-      const tx1 = await dai.approve(controller.address, amount, { from: user })
+      const tx1 = await dai.approve(controller.address, amount, {from: user})
       console.log()
       console.log('approved', toDAI(tx1.receipt.logs[0].args.wad))
 
@@ -96,7 +96,7 @@ contract('Controller', accounts => {
       console.log()
       console.log('depositing')
 
-      const tx = await controller.deposit(amount, { from: user })
+      const tx = await controller.deposit(amount, {from: user})
       console.log('done depositing')
 
       const minDeposit = new BN(10).pow(new BN(16))

@@ -17,7 +17,7 @@ module.exports = function (deployer, network, accounts) {
     console.log(
       'MINTING FOR accounts[0]',
       accounts[0],
-      (await dai.mint.sendTransaction({ from: accounts[0] })).receipt.logs.map(
+      (await dai.mint.sendTransaction({from: accounts[0]})).receipt.logs.map(
         l => l.event
       )
     )
@@ -29,7 +29,7 @@ module.exports = function (deployer, network, accounts) {
     console.log(
       'MINTING FOR accounts[1]',
       accounts[1],
-      (await dai.mint.sendTransaction({ from: accounts[1] })).receipt.logs.map(
+      (await dai.mint.sendTransaction({from: accounts[1]})).receipt.logs.map(
         l => l.event
       )
     )
