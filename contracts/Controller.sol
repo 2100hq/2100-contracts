@@ -10,6 +10,9 @@ contract Controller is Claimer, Minter, Creator {
     using SafeMath for uint256;
 
     uint256 public minDeposit = 10 ** 16; // 0.01 DAI
+    string public name = "2100 Locked DAI";
+    string public symbol = "2100LockedDAI";
+    uint8 public decimals = 18;
 
     event Deposit(address indexed account, uint256 amount, uint256 balance);
     event Withdraw(address indexed account, uint256 amount, uint256 balance);
@@ -102,6 +105,10 @@ contract Controller is Claimer, Minter, Creator {
 
     function balanceOf(address account) public view returns (uint256) {
         return _balances[account];
+    }
+
+    function totalSupply() public view returns (uint256) {
+        return DAI.balanceOf(address(this));
     }
 
     function floor(uint256 amount) internal view returns (uint256) {

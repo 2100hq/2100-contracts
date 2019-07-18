@@ -369,12 +369,11 @@ contract DSTokenBase is ERC20, DSMath {
 
 contract DummyDAI is DSTokenBase(0), DSStop {
 
-    bytes32  public  symbol;
-    uint256  public  decimals = 18; // standard token precision. override to customize
+    string public name = "2100 Dummy DAI";
+    string public symbol = "2100DummyDAI";
+    uint8  public decimals = 18;
 
-    constructor() public {
-        symbol = "0x0";
-    }
+    constructor() public {}
 
     event Mint(address indexed guy, uint wad);
     event Burn(address indexed guy, uint wad);
@@ -433,12 +432,5 @@ contract DummyDAI is DSTokenBase(0), DSStop {
         _balances[guy] = sub(_balances[guy], wad);
         _supply = sub(_supply, wad);
         emit Burn(guy, wad);
-    }
-
-    // Optional token name
-    bytes32   public  name = "";
-
-    function setName(bytes32 name_) public auth {
-        name = name_;
     }
 }
