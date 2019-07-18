@@ -370,7 +370,7 @@ contract DSTokenBase is ERC20, DSMath {
 contract DummyDAI is DSTokenBase(0), DSStop {
 
     string public name = "2100 Dummy DAI";
-    string public symbol = "2100DummyDAI";
+    string public symbol = "DAI";
     uint8  public decimals = 18;
 
     constructor() public {}

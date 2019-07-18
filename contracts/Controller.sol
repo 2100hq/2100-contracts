@@ -11,7 +11,7 @@ contract Controller is Claimer, Minter, Creator {
 
     uint256 public minDeposit = 10 ** 16; // 0.01 DAI
     string public name = "2100 Locked DAI";
-    string public symbol = "2100LockedDAI";
+    string public symbol = "2100DAI";
     uint8 public decimals = 18;
 
     event Deposit(address indexed account, uint256 amount, uint256 balance);
