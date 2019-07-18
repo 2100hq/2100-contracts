@@ -4,37 +4,45 @@ import "../utils/Validator.sol";
 import "../UsernameToken.sol";
 
 contract Creator is Validator {
-  address public owner;
-  mapping (string => address) public symbolToToken;
-  mapping (address => string) public tokenToSymbol;
+
+  mapping (string => address) public usernameToToken;
+  mapping (address => string) public tokenToUsername;
   address[] public tokens;
+  address BLACKLIST_ADDRESS = address(1);
 
-  event Create(string indexed symbol, address indexed token, address creator);
+  event Create(bytes32 indexed hash, string username, address token, address creator);
 
-  function create(string memory symbol, bytes32 hash, uint8 v, bytes32 r, bytes32 s)
+  modifier onlyWhitelisted(string memory username){
+    require(usernameToToken[username] != BLACKLIST_ADDRESS, '2100: Username has been blacklisted');
+    _;
+  }
+
+  function create(string memory username, bytes32 hash, uint8 v, bytes32 r, bytes32 s)
       public
       onlyUnseenMessage(hash)
       onlyValidSignature(owner, hash, v, r, s)
-      returns(bool)
+      onlyWhitelisted(username)
+      returns(address)
   {
-    assert(hash == getCreateHash(symbol));
-    assert(isValidSignature(owner, hash, v,r,s));
+    require(hash == getCreateHash(username), '2100: Signed hash is not correct');
 
-    address usernameToken = address(new UsernameToken(symbol, symbol));
-    symbolToToken[symbol] = usernameToken;
-    tokenToSymbol[usernameToken] = symbol;
-    tokens.push(usernameToken);
+    address token = address(new UsernameToken(username, username));
+    usernameToToken[username] = token;
+    tokenToUsername[token] = username;
+    tokens.push(token);
 
     setSeenMessage(hash);
 
-    return true;
+    emit Create(hash, username, token, msg.sender);
+
+    return token;
   }
 
-    function tokenLength() public view returns (uint256){
+    function tokensLength() public view returns (uint256){
       return tokens.length;
     }
 
-    function getCreateHash(string memory symbol) public pure returns (bytes32 _hash){
-        return keccak256(abi.encodePacked("CREATE", symbol));
+    function getCreateHash(string memory username) public pure returns (bytes32 _hash){
+        return keccak256(abi.encodePacked("CREATE", username));
     }
 }

@@ -6,7 +6,7 @@ import "./classes/Claimer.sol";
 import "./classes/Minter.sol";
 import "./classes/Creator.sol";
 
-contract Controller is Claimer, Minter, Creator {
+contract Controller is Creator {
     using SafeMath for uint256;
 
     uint256 public minDeposit = 10 ** 16; // 0.01 DAI
@@ -22,18 +22,6 @@ contract Controller is Claimer, Minter, Creator {
     mapping(address => uint256) private _balances;
 
     ERC20 public DAI;
-
-    address public owner;
-
-    modifier onlyOwner() {
-        assert(owner == address(0) || owner == msg.sender);
-        _;
-    }
-
-    modifier notOwner() {
-        require(owner != msg.sender, "2100: Owner cannot call this function");
-        _;
-    }
 
     constructor(address daiAddress) public {
         setOwner(msg.sender);

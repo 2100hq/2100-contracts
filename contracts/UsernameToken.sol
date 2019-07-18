@@ -3,32 +3,32 @@ pragma solidity ^0.5.10;
 import "./classes/ERC20.sol";
 
 contract UsernameToken is ERC20 {
-    mapping(address => uint256) private _balances;
-
     address public accountOwner;
 
-    address private _owner;
+    address public owner;
 
-    string private _name;
+    string public name;
 
-    string private _symbol;
+    string public symbol;
 
-    uint8 private _decimals = 18;
-
-    uint256 private _totalSupply;
+    uint8 public decimals = 18;
 
     uint256 public maxSupply = 2100 * 10 ** 18;
 
+    uint256 private _totalSupply;
+
+    mapping(address => uint256) private _balances;
+
     modifier onlyOwner() {
-        assert(_owner == address(0) || _owner == msg.sender);
+        assert(owner == address(0) || owner == msg.sender);
         _;
     }
 
-    constructor(string memory name, string memory symbol) public {
-        assert(_owner == address(0));
+    constructor(string memory _name, string memory _symbol) public {
+        assert(owner == address(0));
         setOwner(msg.sender);
-        setName(name);
-        setSymbol(symbol);
+        setName(_name);
+        setSymbol(_symbol);
     }
 
     function mint(address account, uint256 amount)
@@ -54,22 +54,18 @@ contract UsernameToken is ERC20 {
         return true;
     }
 
-    function setOwner(address owner) public onlyOwner returns (bool) {
-        _owner = owner;
+    function setOwner(address _owner) public onlyOwner returns (bool) {
+        owner = _owner;
         return true;
     }
 
-    function setName(string memory name) public onlyOwner returns (bool) {
-        _name = name;
+    function setName(string memory _name) public onlyOwner returns (bool) {
+        name = _name;
         return true;
     }
 
-    function setSymbol(string memory symbol) public onlyOwner returns (bool) {
-        _symbol = symbol;
+    function setSymbol(string memory _symbol) public onlyOwner returns (bool) {
+        symbol = _symbol;
         return true;
-    }
-
-    function owner() public view returns (address) {
-        return _owner;
     }
 }
