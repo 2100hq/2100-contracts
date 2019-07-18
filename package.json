@@ -14,6 +14,7 @@
   "devDependencies": {
     "fsmonitor": "^0.2.4",
     "prettier-plugin-solidity": "^1.0.0-alpha.27",
-    "prettier-standard": "^9.1.1"
+    "prettier-standard": "^9.1.1",
+    "truffle-hdwallet-provider": "^1.0.14"
   }
 }

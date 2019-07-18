@@ -18,7 +18,7 @@
  *
  */
 
-// const HDWalletProvider = require('truffle-hdwallet-provider');
+const HDWalletProvider = require('truffle-hdwallet-provider')
 // const infuraKey = "fj4jll3k.....";
 //
 // const fs = require('fs');
@@ -46,7 +46,7 @@ module.exports = {
       host: '192.168.1.2',
       port: 7545,
       network_id: 5777 // eslint-disable-line camelcase
-    }
+    },
 
     // Another network with more advanced options...
     // advanced: {
@@ -70,11 +70,11 @@ module.exports = {
     // },
 
     // Useful for private networks
-    // private: {
-    // provider: () => new HDWalletProvider(mnemonic, `https://network.io`),
-    // network_id: 2111,   // This network is yours, in the cloud.
-    // production: true    // Treats this network as if it was a public net. (default: false)
-    // }
+    artax: {
+      provider: () =>
+        new HDWalletProvider(process.env.ARTAX_MNEMONIC, process.env.ARTAX_URL),
+      network_id: '2100'
+    }
   },
 
   // Set default mocha options here, use special reporters etc.
