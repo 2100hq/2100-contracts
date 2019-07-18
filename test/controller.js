@@ -1,5 +1,6 @@
 const Controller = artifacts.require('Controller')
 const DummyDAI = artifacts.require('DummyDAI')
+const UsernameToken = artifacts.require('UsernameToken')
 const BN = web3.utils.BN
 const errTypes = {
   PREFIX: 'VM Exception while processing transaction: ',
@@ -15,10 +16,14 @@ const errTypes = {
   SenderInsufficentFunds: 'Sender has insufficent funds',
   ControllerNotOwner: 'Owner cannot call this function'
 }
+const {getCreateHash, getSignature} = require('./utils/signing')
 
 function toDAI (amount) {
   return web3.utils.fromWei(amount.toString()) + ' DAI'
 }
+
+const NULL_ADDRESS = '0x0000000000000000000000000000000000000000'
+const NULL_SIGNATURE = {r: '0x0', s: '0x0', v: 0}
 
 contract('Controller', accounts => {
   let controller
@@ -255,6 +260,73 @@ contract('Controller', accounts => {
         event.args.balance.eq(userPre2100Balance.sub(withdrawRequestAmount)),
         'User balance should match event'
       )
+    })
+  })
+
+  describe('Create', () => {
+    const username = '2100hq'
+    let createTx
+    let hash
+    it('getCreateHash should match web3.js signing', async () => {
+      assert.equal(
+        getCreateHash(username),
+        await controller.getCreateHash(username)
+      )
+    })
+    it('creates token contract when signed message is valid, token does not exist, username is not on blacklist', async () => {
+      assert.equal(
+        await controller.usernameToToken.call(username),
+        NULL_ADDRESS
+      )
+      hash = getCreateHash(username)
+      const {v, r, s} = await getSignature(hash, owner)
+      try {
+        createTx = await controller.create(username, hash, v, r, s, {
+          from: user
+        })
+      } catch (e) {
+        assert.notOk(e, e)
+      }
+    })
+    it('should set relations correctly', async () => {
+      const token = await controller.usernameToToken.call(username)
+      assert.notEqual(
+        token,
+        NULL_ADDRESS,
+        'usernameToToken should be set correctly'
+      )
+      assert.equal(await controller.tokenToUsername.call(token), username)
+      assert.equal(await controller.tokens.call(0), token)
+      assert.equal(await controller.tokensLength.call(), 1)
+    })
+    it('should emit correctly', async () => {
+      const token = await controller.usernameToToken.call(username)
+      assert(createTx.logs, 'Should produce logs')
+      const event = createTx.logs.find(l => l.event === 'Create')
+      assert(event, 'Should emit a withdraw event')
+      assert(
+        event.args.hash === hash,
+        'hash should be set correctly in the Create event'
+      )
+      assert(
+        event.args.username === username,
+        'username should be set correctly in the Create event'
+      )
+      assert(
+        event.args.token === token,
+        'token should be set correctly in the Create event'
+      )
+      assert(
+        event.args.creator === user,
+        'creator should be set correctly in the Create event'
+      )
+    })
+    it('should set properties of child username token contract correctly', async () => {
+      const address = await controller.usernameToToken.call(username)
+      const usernameToken = await UsernameToken.at(address)
+      assert.equal(await usernameToken.symbol.call(), username)
+      assert.equal(await usernameToken.name.call(), username)
+      assert.equal(await usernameToken.owner.call(), controller.address)
     })
   })
 })
