@@ -73,7 +73,8 @@ module.exports = {
     artax: {
       provider: () =>
         new HDWalletProvider(process.env.ARTAX_MNEMONIC, process.env.ARTAX_URL),
-      network_id: '2100'
+      network_id: '2100',
+      gasPrice: 200
     }
   },
 
