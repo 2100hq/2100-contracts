@@ -4,6 +4,8 @@
   "main": "index.js",
   "author": "Brett <brett@citizenhex.com>",
   "scripts": {
+    "docker:build:image": "docker-compose down && docker-compose build dev",
+    "docker:build": "npm run docker:build:image && docker-compose run --rm yarn-lock",
     "compile:watch": "fsmonitor -s -p '+/contracts/**/*.*' truffle compile",
     "test:watch": "fsmonitor -s -p '+/contracts/**/*.*' '+/test/**/*.*' '+/migrations/*.*' truffle test",
     "prettiersol": "prettier --write **/*.sol",
