@@ -31,9 +31,6 @@ contract Creator is Validator {
     tokenToUsername[token] = username;
     tokens.push(token);
 
-    setSeenMessage(hash);
-
-    emit Create(hash, username, token, msg.sender);
 
     return token;
   }

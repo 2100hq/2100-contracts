@@ -9,11 +9,10 @@ contract Validator is Ownable {
     modifier onlyUnseenMessage(bytes32 messageId){
       require(seenMessage(messageId) == false, '2100: this message has aleady been process');
       _;
+      setSeenMessage(messageId);
     }
 
     modifier onlyValidSignature(address signer, bytes32 hash, uint8 v, bytes32 r, bytes32 s){
-      require(signer != address(0), 'signer is 0');
-      require(owner != address(0), 'owner is 0');
       require(isValidSignature(signer, hash, v,r,s), '2100: invalid signature');
       _;
     }

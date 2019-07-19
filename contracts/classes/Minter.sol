@@ -18,7 +18,6 @@ contract Minter is Validator {
         assert(hash == getMintHash(token, msg.sender, amount, salt)); // details and hash match
         assert(isValidSignature(owner, hash, v,r,s)); // owner signed this message
         assert(UsernameToken(token).mint(msg.sender, amount));
-        setSeenMessage(hash);
         emit Mint(token, msg.sender, amount, hash);
         return true;
     }
