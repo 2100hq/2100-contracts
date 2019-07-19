@@ -14,7 +14,9 @@ const errTypes = {
   SafeMathSubOverflow: 'SafeMath: subtraction overflow',
   ControllerAllowance: 'Controller does not have enough allowance granted',
   SenderInsufficentFunds: 'Sender has insufficent funds',
-  ControllerNotOwner: 'Owner cannot call this function'
+  ControllerNotOwner: 'Owner cannot call this function',
+  ValidatorMessageProcessed: 'this message has aleady been process',
+  ValidatorSigInvalid: 'invalid signature'
 }
 const {getCreateHash, getSignature} = require('./utils/signing')
 
@@ -23,7 +25,6 @@ function toDAI (amount) {
 }
 
 const NULL_ADDRESS = '0x0000000000000000000000000000000000000000'
-const NULL_SIGNATURE = {r: '0x0', s: '0x0', v: 0}
 
 contract('Controller', accounts => {
   let controller
@@ -267,19 +268,41 @@ contract('Controller', accounts => {
     const username = '2100hq'
     let createTx
     let hash
+    let signature
+    before(async () => {
+      hash = getCreateHash(username)
+      signature = await getSignature(hash, owner)
+    })
     it('getCreateHash should match web3.js signing', async () => {
       assert.equal(
         getCreateHash(username),
         await controller.getCreateHash(username)
       )
     })
-    it('creates token contract when signed message is valid, token does not exist, username is not on blacklist', async () => {
+    it('should not allow invalid signatures', async () => {
+      let error
+      const {v, r, s} = await getSignature(hash, user)
+      try {
+        createTx = await controller.create(username, hash, v, r, s, {
+          from: user
+        })
+      } catch (e) {
+        error = e
+      }
+      assert(error, 'Should error')
+      assert(
+        new RegExp(errTypes.ValidatorSigInvalid).test(error.message),
+        `Should error with ${errTypes.ValidatorSigInvalid}; Got ${
+          error.message
+        }`
+      )
+    })
+    it('creates token contract when signature message is valid, has not been seen, token does not exist, username is not on blacklist', async () => {
       assert.equal(
         await controller.usernameToToken.call(username),
         NULL_ADDRESS
       )
-      hash = getCreateHash(username)
-      const {v, r, s} = await getSignature(hash, owner)
+      const {v, r, s} = signature
       try {
         createTx = await controller.create(username, hash, v, r, s, {
           from: user
@@ -327,6 +350,24 @@ contract('Controller', accounts => {
       assert.equal(await usernameToken.symbol.call(), username)
       assert.equal(await usernameToken.name.call(), username)
       assert.equal(await usernameToken.owner.call(), controller.address)
+    })
+    it('should not allow resubmitting processed hash', async () => {
+      let error
+      const {v, r, s} = signature
+      try {
+        createTx = await controller.create(username, hash, v, r, s, {
+          from: user
+        })
+      } catch (e) {
+        error = e
+      }
+      assert(error, 'Should error')
+      assert(
+        new RegExp(errTypes.ValidatorMessageProcessed).test(error.message),
+        `Should error with ${errTypes.ValidatorMessageProcessed}; Got ${
+          error.message
+        }`
+      )
     })
   })
 })
