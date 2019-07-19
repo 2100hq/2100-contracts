@@ -12,7 +12,7 @@ function sanityCheck (v, r, s, hash, signer) {
   )
 }
 
-exports.getCreateHash = function (username) {
+exports.getCreateMessageId = function (username) {
   return web3.utils.soliditySha3('CREATE', username)
 }
 

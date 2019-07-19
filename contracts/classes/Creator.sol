@@ -10,27 +10,28 @@ contract Creator is Validator {
   address[] public tokens;
   address BLACKLIST_ADDRESS = address(1);
 
-  event Create(bytes32 indexed hash, string username, address token, address creator);
+  event Create(bytes32 messageId, string username, address token, address creator);
 
   // modifier onlyWhitelisted(string memory username){
   //   require(usernameToToken[username] != BLACKLIST_ADDRESS, '2100: Username has been blacklisted');
   //   _;
   // }
 
-  function create(string memory username, bytes32 hash, uint8 v, bytes32 r, bytes32 s)
+  function create(string memory username, bytes32 messageId, uint8 v, bytes32 r, bytes32 s)
       public
-      onlyUnseenMessage(hash)
-      onlyValidSignature(owner, hash, v, r, s)
+      onlyUnseenMessage(messageId)
+      onlyValidSignature(owner, messageId, v, r, s)
       // onlyWhitelisted(username)
       returns(address)
   {
-    require(hash == getCreateHash(username), '2100: Signed hash is not correct');
+    require(messageId == getCreateMessageId(username), '2100: messageId is invalid');
 
     address token = address(new UsernameToken(username, username));
     usernameToToken[username] = token;
     tokenToUsername[token] = username;
     tokens.push(token);
 
+    emit Create(messageId, username, token, msg.sender);
 
     return token;
   }
@@ -39,7 +40,7 @@ contract Creator is Validator {
       return tokens.length;
     }
 
-    function getCreateHash(string memory username) public pure returns (bytes32 _hash){
+    function getCreateMessageId(string memory username) public pure returns (bytes32){
         return keccak256(abi.encodePacked("CREATE", username));
     }
 }

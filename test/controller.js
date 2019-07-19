@@ -16,9 +16,10 @@ const errTypes = {
   SenderInsufficentFunds: 'Sender has insufficent funds',
   ControllerNotOwner: 'Owner cannot call this function',
   ValidatorMessageProcessed: 'this message has aleady been process',
-  ValidatorSigInvalid: 'invalid signature'
+  ValidatorSigInvalid: 'invalid signature',
+  MessageIdInvalid: 'messageId is invalid'
 }
-const {getCreateHash, getSignature} = require('./utils/signing')
+const {getCreateMessageId, getSignature} = require('./utils/signing')
 
 function toDAI (amount) {
   return web3.utils.fromWei(amount.toString()) + ' DAI'
@@ -270,13 +271,13 @@ contract('Controller', accounts => {
     let hash
     let signature
     before(async () => {
-      hash = getCreateHash(username)
+      hash = getCreateMessageId(username)
       signature = await getSignature(hash, owner)
     })
-    it('getCreateHash should match web3.js signing', async () => {
+    it('getCreateMessageId should match web3.js signing', async () => {
       assert.equal(
-        getCreateHash(username),
-        await controller.getCreateHash(username)
+        getCreateMessageId(username),
+        await controller.getCreateMessageId(username)
       )
     })
     it('should not allow invalid signatures', async () => {
@@ -295,6 +296,22 @@ contract('Controller', accounts => {
         `Should error with ${errTypes.ValidatorSigInvalid}; Got ${
           error.message
         }`
+      )
+    })
+    it('should not allow invalid messageId', async () => {
+      let error
+      const {v, r, s} = signature
+      try {
+        createTx = await controller.create('somename', hash, v, r, s, {
+          from: user
+        })
+      } catch (e) {
+        error = e
+      }
+      assert(error, 'Should error')
+      assert(
+        new RegExp(errTypes.MessageIdInvalid).test(error.message),
+        `Should error with ${errTypes.MessageIdInvalid}; Got ${error.message}`
       )
     })
     it('creates token contract when signature message is valid, has not been seen, token does not exist, username is not on blacklist', async () => {
@@ -328,7 +345,7 @@ contract('Controller', accounts => {
       const event = createTx.logs.find(l => l.event === 'Create')
       assert(event, 'Should emit a withdraw event')
       assert(
-        event.args.hash === hash,
+        event.args.messageId === hash,
         'hash should be set correctly in the Create event'
       )
       assert(
