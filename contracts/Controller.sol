@@ -6,7 +6,7 @@ import "./classes/Claimer.sol";
 import "./classes/Minter.sol";
 import "./classes/Creator.sol";
 
-contract Controller is Creator {
+contract Controller is Creator, Minter {
     using SafeMath for uint256;
 
     uint256 public minDeposit = 10 ** 16; // 0.01 DAI

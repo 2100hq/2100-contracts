@@ -16,6 +16,10 @@ exports.getCreateMessageId = function (username) {
   return web3.utils.soliditySha3('CREATE', username)
 }
 
+exports.getMintMessageId = function (token, account, amount, salt) {
+  return web3.utils.soliditySha3('MINT', token, account, amount, salt)
+}
+
 exports.getSignature = async function (hash, signer) {
   const signature = await web3.eth.sign(hash, signer)
 
