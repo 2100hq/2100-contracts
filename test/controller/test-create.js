@@ -20,25 +20,22 @@ contract('Controller', accounts => {
   describe('Create', () => {
     const username = '2100hq'
     let createTx
-    let hash
+    let messageId
     let signature
     before(async () => {
-      hash = getCreateMessageId(username)
-      signature = await getSignature(hash, owner)
+      messageId = getCreateMessageId(username)
+      signature = await getSignature(messageId, owner)
     })
 
     it('getCreateMessageId should match web3.js signing', async () => {
-      assert.equal(
-        getCreateMessageId(username),
-        await controller.getCreateMessageId(username)
-      )
+      assert.equal(messageId, await controller.getCreateMessageId(username))
     })
 
     it('should not allow invalid signatures', async () => {
       let error
-      const {v, r, s} = await getSignature(hash, user)
+      const {v, r, s} = await getSignature(messageId, user)
       try {
-        createTx = await controller.create(username, hash, v, r, s, {
+        createTx = await controller.create(username, messageId, v, r, s, {
           from: user
         })
       } catch (e) {
@@ -57,7 +54,7 @@ contract('Controller', accounts => {
       let error
       const {v, r, s} = signature
       try {
-        createTx = await controller.create('somename', hash, v, r, s, {
+        createTx = await controller.create('somename', messageId, v, r, s, {
           from: user
         })
       } catch (e) {
@@ -77,7 +74,7 @@ contract('Controller', accounts => {
       )
       const {v, r, s} = signature
       try {
-        createTx = await controller.create(username, hash, v, r, s, {
+        createTx = await controller.create(username, messageId, v, r, s, {
           from: user
         })
       } catch (e) {
@@ -103,8 +100,8 @@ contract('Controller', accounts => {
       const event = createTx.logs.find(l => l.event === 'Create')
       assert(event, 'Should emit a withdraw event')
       assert(
-        event.args.messageId === hash,
-        'hash should be set correctly in the Create event'
+        event.args.messageId === messageId,
+        'messageId should be set correctly in the Create event'
       )
       assert(
         event.args.username === username,
@@ -128,11 +125,11 @@ contract('Controller', accounts => {
       assert.equal(await usernameToken.owner.call(), controller.address)
     })
 
-    it('should not allow resubmitting processed hash', async () => {
+    it('should not allow resubmitting processed messageId', async () => {
       let error
       const {v, r, s} = signature
       try {
-        createTx = await controller.create(username, hash, v, r, s, {
+        createTx = await controller.create(username, messageId, v, r, s, {
           from: user
         })
       } catch (e) {
