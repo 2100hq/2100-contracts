@@ -37,11 +37,14 @@ contract UsernameToken is ERC20 {
         returns (bool)
     {
         require(account != address(0), "ERC20: mint to the zero address");
-        uint256 newTotalSupply = _totalSupply.add(amount);
-        assert(newTotalSupply <= maxSupply);
-        _totalSupply = newTotalSupply;
+        _totalSupply = _totalSupply.add(amount);
+        require(
+            _totalSupply <= maxSupply,
+            "ERC20: max supply has been reached"
+        );
         _balances[account] = _balances[account].add(amount);
         emit Transfer(address(0), account, amount);
+        return true;
     }
 
     function setAccountOwner(address _accountOwner)
@@ -67,5 +70,19 @@ contract UsernameToken is ERC20 {
     function setSymbol(string memory _symbol) public onlyOwner returns (bool) {
         symbol = _symbol;
         return true;
+    }
+
+    /**
+     * @dev See `IERC20.totalSupply`.
+     */
+    function totalSupply() public view returns (uint256) {
+        return _totalSupply;
+    }
+
+    /**
+     * @dev See `IERC20.balanceOf`.
+     */
+    function balanceOf(address account) public view returns (uint256) {
+        return _balances[account];
     }
 }
