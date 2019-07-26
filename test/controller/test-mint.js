@@ -4,7 +4,7 @@ const {
   getCreateMessageId,
   getMintMessageId,
   getSignature
-} = require('../utils/signing')
+} = require('../../utils/signing')
 const errTypes = require('../utils/err-types')
 
 const BN = web3.utils.BN

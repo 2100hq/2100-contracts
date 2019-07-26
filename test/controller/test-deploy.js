@@ -1,7 +1,7 @@
 const Controller = artifacts.require('Controller')
 const DummyDAI = artifacts.require('DummyDAI')
 const UsernameToken = artifacts.require('UsernameToken')
-const {getCreateMessageId, getSignature} = require('../utils/signing')
+const {getCreateMessageId, getSignature} = require('../../utils/signing')
 const errTypes = require('../utils/err-types')
 
 const BN = web3.utils.BN
