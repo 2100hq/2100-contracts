@@ -3,6 +3,9 @@ const SafeMath = artifacts.require('./libraries/SafeMath')
 const DummyDAI = artifacts.require('./test/DummyDAI')
 
 async function getDAIAddress (network) {
+  if (/artax/.test(network) && process.env.ARTAX_DAI_ADDRESS != null){
+    return (await DummyDAI.at(process.env.ARTAX_DAI_ADDRESS.toLowerCase())).address // will throw if does not exist
+  }
   if (/ganache|dev|test|artax/.test(network)) {
     return (await DummyDAI.deployed()).address
   }
