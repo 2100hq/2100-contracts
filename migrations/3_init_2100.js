@@ -15,6 +15,8 @@ async function getDAIAddress (network) {
 module.exports = async function (deployer, network, accounts) {
   const daiAddress = await getDAIAddress(network)
 
+  await deployer.deploy(SafeMath)
+
   await deployer.link(SafeMath, Controller)
 
   await deployer.deploy(Controller, daiAddress)
