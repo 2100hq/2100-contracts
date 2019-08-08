@@ -1,6 +1,6 @@
 {
   "name": "2100-contracts",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "main": "index.js",
   "author": "Brett <brett@citizenhex.com>",
   "scripts": {
