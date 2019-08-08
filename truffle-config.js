@@ -70,10 +70,16 @@ module.exports = {
     // },
 
     // Useful for private networks
-    artax: {
+    artaxstaging: {
       provider: () =>
         new HDWalletProvider(process.env.ARTAX_MNEMONIC, process.env.ARTAX_URL),
       network_id: '2100',
+      gasPrice: 200
+    },
+    artaxdev: {
+      provider: () =>
+        new HDWalletProvider(process.env.ARTAX_MNEMONIC, process.env.ARTAX_URL),
+      network_id: '210',
       gasPrice: 200
     }
   },
