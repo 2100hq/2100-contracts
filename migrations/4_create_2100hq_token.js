@@ -2,6 +2,7 @@ const Controller = artifacts.require('Controller')
 const {getCreateMessageId, getSignature} = require('../utils/signing')
 
 module.exports = async function (deployer, network, accounts) {
+  return
   if (!/ganache|dev|test|artax/.test(network)) {
     return console.log('Skipping $2100hq token creation on', network)
   }
