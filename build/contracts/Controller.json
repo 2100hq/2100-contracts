@@ -9679,15 +9679,279 @@
     "version": "0.5.10+commit.5a6ea5b1.Emscripten.clang"
   },
   "networks": {
-    "2100": {
-      "events": {},
+    "210": {
+      "events": {
+        "0x90890809c654f11d6e72a28fa60149770a0d11ec6c92319d6ceb2bb0a4ea1a15": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "account",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "amount",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "balance",
+              "type": "uint256"
+            }
+          ],
+          "name": "Deposit",
+          "type": "event",
+          "signature": "0x90890809c654f11d6e72a28fa60149770a0d11ec6c92319d6ceb2bb0a4ea1a15"
+        },
+        "0xf279e6a1f5e320cca91135676d9cb6e44ca8a08c0b88342bcdb1144f6511b568": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "account",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "amount",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "balance",
+              "type": "uint256"
+            }
+          ],
+          "name": "Withdraw",
+          "type": "event",
+          "signature": "0xf279e6a1f5e320cca91135676d9cb6e44ca8a08c0b88342bcdb1144f6511b568"
+        },
+        "0xa5e220c2c27d986cc8efeafa8f34ba6ea6bf96a34e146b29b6bdd8587771b130": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "owner",
+              "type": "address"
+            }
+          ],
+          "name": "Owner",
+          "type": "event",
+          "signature": "0xa5e220c2c27d986cc8efeafa8f34ba6ea6bf96a34e146b29b6bdd8587771b130"
+        },
+        "0x6768ecc4502721534959d1b99640aad4829d2ac886647e4c55ea5eb6b6a181af": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "daiAddress",
+              "type": "address"
+            }
+          ],
+          "name": "DAIAddress",
+          "type": "event",
+          "signature": "0x6768ecc4502721534959d1b99640aad4829d2ac886647e4c55ea5eb6b6a181af"
+        },
+        "0x692b6d6e8b9cda6d9a5aabac3677faeb10ae6f6a0090e5e7adf420efe94993b5": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "token",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "account",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "amount",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "messageId",
+              "type": "bytes32"
+            }
+          ],
+          "name": "Mint",
+          "type": "event",
+          "signature": "0x692b6d6e8b9cda6d9a5aabac3677faeb10ae6f6a0090e5e7adf420efe94993b5"
+        },
+        "0x4ca1969038e9a347e6f63f6d155cecc030ca7b1dcba468cfdcfcf349cc9d33a4": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "messageId",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "name": "username",
+              "type": "string"
+            },
+            {
+              "indexed": false,
+              "name": "token",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "creator",
+              "type": "address"
+            }
+          ],
+          "name": "Create",
+          "type": "event",
+          "signature": "0x4ca1969038e9a347e6f63f6d155cecc030ca7b1dcba468cfdcfcf349cc9d33a4"
+        }
+      },
       "links": {},
-      "address": "0xAf83A4CD67c90185a617304940B1a0d5be2b8f00",
-      "transactionHash": "0xed979a19b28df07e94c770f99fa745045ae227919885e2c87f8af90fea3f4dd7"
+      "address": "0x93a9ccc9151Dbb3e7acFA9B5f5061e5A032867ac",
+      "transactionHash": "0x54747869e6a735912238ec3f8558c6fe1b0eecf20bd601ef7737ebde68d19b45"
+    },
+    "2100": {
+      "events": {
+        "0x90890809c654f11d6e72a28fa60149770a0d11ec6c92319d6ceb2bb0a4ea1a15": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "account",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "amount",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "balance",
+              "type": "uint256"
+            }
+          ],
+          "name": "Deposit",
+          "type": "event",
+          "signature": "0x90890809c654f11d6e72a28fa60149770a0d11ec6c92319d6ceb2bb0a4ea1a15"
+        },
+        "0xf279e6a1f5e320cca91135676d9cb6e44ca8a08c0b88342bcdb1144f6511b568": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "account",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "amount",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "balance",
+              "type": "uint256"
+            }
+          ],
+          "name": "Withdraw",
+          "type": "event",
+          "signature": "0xf279e6a1f5e320cca91135676d9cb6e44ca8a08c0b88342bcdb1144f6511b568"
+        },
+        "0xa5e220c2c27d986cc8efeafa8f34ba6ea6bf96a34e146b29b6bdd8587771b130": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "owner",
+              "type": "address"
+            }
+          ],
+          "name": "Owner",
+          "type": "event",
+          "signature": "0xa5e220c2c27d986cc8efeafa8f34ba6ea6bf96a34e146b29b6bdd8587771b130"
+        },
+        "0x6768ecc4502721534959d1b99640aad4829d2ac886647e4c55ea5eb6b6a181af": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "daiAddress",
+              "type": "address"
+            }
+          ],
+          "name": "DAIAddress",
+          "type": "event",
+          "signature": "0x6768ecc4502721534959d1b99640aad4829d2ac886647e4c55ea5eb6b6a181af"
+        },
+        "0x692b6d6e8b9cda6d9a5aabac3677faeb10ae6f6a0090e5e7adf420efe94993b5": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "token",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "account",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "amount",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "messageId",
+              "type": "bytes32"
+            }
+          ],
+          "name": "Mint",
+          "type": "event",
+          "signature": "0x692b6d6e8b9cda6d9a5aabac3677faeb10ae6f6a0090e5e7adf420efe94993b5"
+        },
+        "0x4ca1969038e9a347e6f63f6d155cecc030ca7b1dcba468cfdcfcf349cc9d33a4": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "messageId",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "name": "username",
+              "type": "string"
+            },
+            {
+              "indexed": false,
+              "name": "token",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "creator",
+              "type": "address"
+            }
+          ],
+          "name": "Create",
+          "type": "event",
+          "signature": "0x4ca1969038e9a347e6f63f6d155cecc030ca7b1dcba468cfdcfcf349cc9d33a4"
+        }
+      },
+      "links": {},
+      "address": "0xF656a1FFCAef71EfCA9988F88f5A3ABaD7bE51bd",
+      "transactionHash": "0xa84ea40148585c5895452710f663330e5eddbd83bfd0addcca6d48eeacdc5b7a"
     }
   },
   "schemaVersion": "3.0.11",
-  "updatedAt": "2019-07-26T02:26:42.048Z",
+  "updatedAt": "2019-08-08T16:10:26.331Z",
   "devdoc": {
     "methods": {}
   },
