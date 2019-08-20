@@ -12,8 +12,11 @@
     "prettierjs": "prettier-standard '**/*.js'",
     "prettier": "npm run prettierjs && npm run prettiersol"
   },
-  "dependencies": {},
+  "dependencies": {
+    "truffle": "^5.0.32"
+  },
   "devDependencies": {
+    "dotenv": "^8.1.0",
     "ethereumjs-util": "^6.1.0",
     "ethers": "^4.0.33",
     "fsmonitor": "^0.2.4",
