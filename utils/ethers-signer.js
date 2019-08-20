@@ -77,7 +77,7 @@ module.exports = (config, libs = {}) => {
     contracts[name] =
       libs[name] ||
       new ethers.Contract(
-        artifact.networks['2100'].address,
+        artifact.networks[config.ethers.chainId].address,
         artifact.abi,
         wallet
       )

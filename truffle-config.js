@@ -17,6 +17,7 @@
  * phrase from a file you've .gitignored so it doesn't accidentally become public.
  *
  */
+require('dotenv').config()
 
 const HDWalletProvider = require('truffle-hdwallet-provider')
 // const infuraKey = "fj4jll3k.....";
@@ -43,9 +44,9 @@ module.exports = {
     // options below to some value.
     //
     ganache: {
-      host: '192.168.1.2',
-      port: 7545,
-      network_id: 5777 // eslint-disable-line camelcase
+      provider: () =>
+        new HDWalletProvider(process.env.ARTAX_MNEMONIC, 'http://0.0.0.0:8545'),
+      network_id: 21 // eslint-disable-line camelcase
     },
 
     // Another network with more advanced options...
